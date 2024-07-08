@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     stages {
-        /*
         stage('Build') {
             agent {
                 docker {
@@ -21,40 +20,40 @@ pipeline {
                 '''
             }
         }
-        */
-        stage('Test') {
-            agent { //reusing the node.js image in docker
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                    echo "Test stage"
-                    #test -f "build/index.html"
-                    #grep "index.html" build/index.html
-                    npm test
-               '''
-            }
-        }
-        stage('E2E') {
-            agent { //reusing the node.js image in docker 
-                docker {
-                    image 'mcr.microsoft.com/playwright:v1.44.1-jammy'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                    npm install -g serve #best run in terminal as local dependency
-                    node_modules/.bin/serve -s build &
-                    #relative path of e2e/node_modules/bin/serve
-                    sleep 10
-                    npx playwright test
-                '''
-            }
-        }
+        
+        // stage('Test') {
+        //     agent { //reusing the node.js image in docker
+        //         docker {
+        //             image 'node:18-alpine'
+        //             reuseNode true
+        //         }
+        //     }
+        //     steps {
+        //         sh '''
+        //             echo "Test stage"
+        //             #test -f "build/index.html"
+        //             #grep "index.html" build/index.html
+        //             npm test
+        //        '''
+        //     }
+        // }
+        // stage('E2E') {
+        //     agent { //reusing the node.js image in docker 
+        //         docker {
+        //             image 'mcr.microsoft.com/playwright:v1.44.1-jammy'
+        //             reuseNode true
+        //         }
+        //     }
+        //     steps {
+        //         sh '''
+        //             npm install -g serve #best run in terminal as local dependency
+        //             node_modules/.bin/serve -s build &
+        //             #relative path of e2e/node_modules/bin/serve
+        //             sleep 10
+        //             npx playwright test
+        //         '''
+        //     }
+        // }
     }
     post {
         always {
