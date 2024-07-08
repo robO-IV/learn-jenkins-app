@@ -50,7 +50,7 @@ pipeline {
                     # "&" allows server to run in the background and not prevent the rest of the run
                     #relative path of e2e/node_modules/bin/serve
                     sleep 10
-                    npx playwright test
+                    npx playwright test --reporter=html
                 '''
             }
         }
