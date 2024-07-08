@@ -49,7 +49,7 @@ pipeline {
                     node_modules/.bin/serve -s build &
                     #relative path of e2e/node_modules/bin/serve
                     sleep 10
-                    #npx playwright test
+                    npx playwright test
                 '''
             }
         }
