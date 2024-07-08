@@ -46,9 +46,10 @@ pipeline {
             steps {
                 sh '''
                     npm install serve
-                    node_modules/.bin/serve -s build
+                    node_modules/.bin/serve -s build &  
+                    # "&" allows server to run in the background and not prevent the rest of the run
                     #relative path of e2e/node_modules/bin/serve
-                    #sleep 10
+                    sleep 10
                     npx playwright test
                 '''
             }
