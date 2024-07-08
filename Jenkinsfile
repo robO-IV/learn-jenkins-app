@@ -30,7 +30,7 @@ pipeline {
             steps {
                 sh '''
                     echo "Test stage"
-                    test -f "build/index.html" #why did I lose my build folder?
+                    #test -f "build/index.html" #why did I lose my build folder?
                     #grep "index.html" build/index.html
                     npm test
                '''
@@ -48,8 +48,8 @@ pipeline {
                     npm install -g serve #best run in terminal as local dependency
                     serve -s build #node_modules/.bin/
                     #relative path of e2e/node_modules/bin/serve
-                    sleep 10
-                    #npx playwright test
+                    #sleep 10
+                    npx playwright test
                 '''
             }
         }
