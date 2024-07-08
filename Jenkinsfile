@@ -39,7 +39,7 @@ pipeline {
         stage('E2E') {
             agent { //reusing the node.js image in docker 
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.39.1-jammy'
+                    image 'mcr.microsoft.com/playwright:v1.45.1-jammy'
                     reuseNode true
                 }
             }
