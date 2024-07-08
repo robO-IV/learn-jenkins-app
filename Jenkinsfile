@@ -45,7 +45,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    npm install -g serve #best run in terminal as local dependency
+                    npm install serve #best run in terminal as local dependency
                     node_modules/.bin/serve -s build &
                     #relative path of e2e/node_modules/bin/serve
                     sleep 10
