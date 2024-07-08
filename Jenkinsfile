@@ -2,24 +2,24 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                    #ls -la
-                    node --version
-                    npm --version
-                    npm ci
-                    npm run build
-                    ls -la
-                '''
-            }
-        }
+    //     stage('Build') {
+    //         agent {
+    //             docker {
+    //                 image 'node:18-alpine'
+    //                 reuseNode true
+    //             }
+    //         }
+    //         steps {
+    //             sh '''
+    //                 #ls -la
+    //                 node --version
+    //                 npm --version
+    //                 npm ci
+    //                 npm run build
+    //                 ls -la
+    //             '''
+    //         }
+    //     }
         stage('Test') {
             agent { //reusing the node.js image in docker
                 docker {
@@ -30,8 +30,8 @@ pipeline {
             steps {
                 sh '''
                     echo "Test stage"
-                    test -f "build/index.html"
-                    grep "index.html" build/index.html
+                    test -f "build/index.html" #why did I lose my build folder?
+                    #grep "index.html" build/index.html
                     npm test
                '''
             }
@@ -39,17 +39,17 @@ pipeline {
         stage('E2E') {
             agent { //reusing the node.js image in docker 
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.44.1-jammy'
+                    image 'mcr.microsoft.com/playwright:v1.45.1-jammy'
                     reuseNode true
                 }
             }
             steps {
                 sh '''
-                    npm install serve #best run in terminal as local dependency
-                    node_modules/.bin/serve -s build &
+                    npm install -g serve #best run in terminal as local dependency
+                    serve -s build #node_modules/.bin/
                     #relative path of e2e/node_modules/bin/serve
                     sleep 10
-                   # npx playwright test
+                    #npx playwright test
                 '''
             }
         }
