@@ -21,7 +21,7 @@ pipeline {
     //         }
     //     }
         stage('Tests') {
-            paralell {
+            parallel {
                 stage('Unit Test') {
                     agent { //reusing the node.js image in docker
                         docker {
