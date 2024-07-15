@@ -1,6 +1,11 @@
 // plugin reminder: Blue Ocean
 pipeline {
     agent any
+
+    environment {
+        NETLIFY_SITE_ID = '34e53681-2d1a-4822-b3d7-ce96b95baec1'
+    }
+
     stages {
         stage('Build') {
             agent {
@@ -80,6 +85,7 @@ pipeline {
             sh '''
                 npm install netlify-cli
                 node_modules/.bin/netlify --version
+                echo "Deploying to production SiteId: 34e53681-2d1a-4822-b3d7-ce96b95baec1
             '''
         }
     }
