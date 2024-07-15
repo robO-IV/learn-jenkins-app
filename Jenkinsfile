@@ -6,10 +6,6 @@ pipeline {
         NETLIFY_SITE_ID = '34e53681-2d1a-4822-b3d7-ce96b95baec1'
     }
 
-    // environment {
-    //     NETLIFY_SITE_ID = '34e53681-2d1a-4822-b3d7-ce96b95baec1'
-    // }
-
     stages {
         stage('Build') {
             agent {
@@ -44,7 +40,7 @@ pipeline {
                             #test -f "build/index.html" #why did I lose my build folder?
                             #grep "index.html" build/index.html
                             npm test
-                    '''
+                        '''
                     }
                     post {
                         always {
@@ -78,20 +74,20 @@ pipeline {
             }
         }
 
-            stage('Deploy') {
-        agent {
-            docker {
-                image 'node:18-alpine'
-                reuseNode true
+        stage('Deploy') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    npm install netlify-cli
+                    node_modules/.bin/netlify --version
+                    echo "Deploying to production SiteId: 34e53681-2d1a-4822-b3d7-ce96b95baec1
+                '''
             }
         }
-        steps {
-            sh '''
-                npm install netlify-cli
-                node_modules/.bin/netlify --version
-                echo "Deploying to production SiteId: 34e53681-2d1a-4822-b3d7-ce96b95baec1
-            '''
-        }
-    }
     }
 }
