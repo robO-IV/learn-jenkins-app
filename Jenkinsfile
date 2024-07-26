@@ -104,7 +104,7 @@ pipeline {
                 sh '''
                     echo Approval stage...
                     timeout(time: 1, unit: 'MINUTES') {
-                    input message: 'Ready to deply?', ok: 'Yes, let\'s do this'
+                        input message: 'Do you wish to deploy to production?', ok: 'Yes, I am sure!'
                     }
                 '''
             }
