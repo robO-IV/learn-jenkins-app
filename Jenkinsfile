@@ -93,6 +93,23 @@ pipeline {
             }
         }
 
+        stage('Approval') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    echo Approval stage...
+                    timeout(time: 1, unit: 'MINUTES') {
+                    input message: 'Ready to deply?', ok: 'Yes, let\'s do this'
+                    }
+                '''
+            }
+        }
+
         stage('Deploy Prod') {
             agent {
                 docker {
