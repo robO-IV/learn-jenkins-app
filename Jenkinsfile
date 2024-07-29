@@ -89,8 +89,35 @@ pipeline {
                     echo "Deploying to Staging SiteId: $NETFLIFY_SITE_ID"
                     node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
-                    node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json
                 '''
+                script {
+                    env.STAGING_URL = sh(script: "node_modules/.bin/node-jq -r'.deploy_url' deploy-output.json", returnStdout: true)
+            }
+            }
+        }
+
+        stage('Staging E2E') {
+            agent { //reusing the node.js image in docker 
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.45.1-jammy'
+                    reuseNode true
+                }
+            }
+
+            environment {
+                CI_ENVIRONMENT_URL = "${env.STAGING_URL}" //alternative syntax CI_ENVIRONMENT_URL = "$env.STAGING_URL"
+            }
+
+            steps {
+                sh '''
+                    #npm install serve - netlify does this for us
+                    npx playwright test --reporter=html
+                '''
+            }
+            post {
+                always {
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright Staging e2e Report', reportTitles: '', useWrapperFileDirectly: true])
+                }
             }
         }
 
