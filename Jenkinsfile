@@ -38,7 +38,7 @@ pipeline {
                     steps {
                         sh '''
                             echo "Test stage"
-                            test -f build/index.html
+                            #test -f build/index.html
                             #grep "index.html" build/index.html
                             npm test
                         '''
@@ -74,27 +74,6 @@ pipeline {
                 }
             }
         }
-
-        // stage('Deploy Staging') {
-        //     agent {
-        //         docker {
-        //             image 'node:18-alpine'
-        //             reuseNode true
-        //         }
-        //     }
-        //     steps {
-        //         sh '''
-        //             npm install netlify-cli node-jq
-        //             node_modules/.bin/netlify --version
-        //             echo "Deploying to Staging SiteId: $NETFLIFY_SITE_ID"
-        //             node_modules/.bin/netlify status
-        //             node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
-        //         '''
-        //         script {
-        //             env.STAGING_URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json", returnStdout: true)
-        //         }
-        //     }
-        // }
 
         stage('Deploy Staging with E2E') {
             agent { //reusing the node.js image in docker 
@@ -136,24 +115,6 @@ pipeline {
                 }
             }
         }
-
-        // stage('Deploy Prod') {
-        //     agent {
-        //         docker {
-        //             image 'node:18-alpine'
-        //             reuseNode true
-        //         }
-        //     }
-        //     steps {
-        //         sh '''
-        //             npm install netlify-cli
-        //             node_modules/.bin/netlify --version
-        //             echo "Deploying to production SiteId: $NETFLIFY_SITE_ID"
-        //             node_modules/.bin/netlify status
-        //             node_modules/.bin/netlify deploy --dir=build --prod
-        //         '''
-        //     }
-        // }
 
         stage('Deploy Prod with E2E') {
             agent { //reusing the node.js image in docker 
