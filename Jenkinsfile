@@ -50,7 +50,7 @@ pipeline {
                     }
                 }
                 stage('E2E') {
-                    agent { //reusing the node.js image in docker 
+                    agent { 
                         docker {
                             image 'mcr.microsoft.com/playwright:v1.45.1-jammy'
                             reuseNode true
@@ -63,9 +63,9 @@ pipeline {
                             node_modules/.bin/serve -s build &
                             # "&" allows server to run in the background and not prevent the rest of the run
                             #relative path of e2e/node_modules/bin/serve
-                            SERVER_PID=$!
-                            echo "Server PID: $SERVER_PID"                            
-                            sleep 15
+                            #SERVER_PID=$!
+                            #echo "Server PID: $SERVER_PID"                            
+                            sleep 10
                             echo "Running Playwright Test"
                             npx playwright test --reporter=html
                         '''
