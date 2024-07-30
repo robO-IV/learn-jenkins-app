@@ -28,7 +28,7 @@ pipeline {
         }
         stage('Tests') {
             parallel {
-                stage('Unit Test') {
+                stage('Unit Tests') {
                     agent { //reusing the node.js image in docker
                         docker {
                             image 'node:18-alpine'
@@ -38,7 +38,7 @@ pipeline {
                     steps {
                         sh '''
                             echo "Test stage"
-                            #test -f "build/index.html"
+                            test -f build/index.html
                             #grep "index.html" build/index.html
                             npm test
                         '''
@@ -59,7 +59,7 @@ pipeline {
                     steps {
                         sh '''
                             npm install serve
-                            node_modules/.bin/serve -s build &  
+                            node_modules/.bin/serve -s build &
                             # "&" allows server to run in the background and not prevent the rest of the run
                             #relative path of e2e/node_modules/bin/serve
                             sleep 10
@@ -112,7 +112,7 @@ pipeline {
                 sh '''
                     npm install netlify-cli node-jq
                     node_modules/.bin/netlify --version
-                    echo "Deploying to Staging SiteId: $NETFLIFY_SITE_ID"
+                    echo "Deploying to staging. SiteId: $NETFLIFY_SITE_ID"
                     node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
                     CI_ENVIRONMENT_URL=$(node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json)
@@ -128,12 +128,7 @@ pipeline {
         }
 
         stage('Approval') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
+
             steps {
                 echo 'Approval stage...'
                 timeout(time: 15, unit: 'MINUTES') {
@@ -177,7 +172,7 @@ pipeline {
                     node --version
                     npm install netlify-cli
                     node_modules/.bin/netlify --version
-                    echo "Deploying to production SiteId: $NETFLIFY_SITE_ID"
+                    echo "Deploying to production. Site Id: $NETFLIFY_SITE_ID"
                     node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --prod
                     #npm install serve - netlify does this for us
