@@ -58,11 +58,15 @@ pipeline {
                     }
                     steps {
                         sh '''
+                            echo "E2E stage"
                             npm install serve
                             node_modules/.bin/serve -s build &
                             # "&" allows server to run in the background and not prevent the rest of the run
                             #relative path of e2e/node_modules/bin/serve
-                            sleep 10
+                            SERVER_PID=$!
+                            echo "Server PID: $SERVER_PID"                            
+                            sleep 15
+                            echo "Running Playwright Test"
                             npx playwright test --reporter=html
                         '''
                     }
