@@ -5,6 +5,7 @@ pipeline {
     environment {
         NETLIFY_SITE_ID = '34e53681-2d1a-4822-b3d7-ce96b95baec1'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
+        REACT_APP_VERSION = '1.2.3' //refer to expectedAppVersion in app.spec.js and app.js
     }
 
     stages {
@@ -109,16 +110,16 @@ pipeline {
                 }
             }
         }
+        // removing approval stage for continuous delivery step
+        // stage('Approval') {
 
-        stage('Approval') {
-
-            steps {
-                echo 'Approval stage...'
-                timeout(time: 15, unit: 'MINUTES') {
-                    input message: 'Do you wish to deploy to production?', ok: 'Yes, I am sure!'
-                }
-            }
-        }
+        //     steps {
+        //         echo 'Approval stage...'
+        //         timeout(time: 15, unit: 'MINUTES') {
+        //             input message: 'Do you wish to deploy to production?', ok: 'Yes, I am sure!'
+        //         }
+        //     }
+        // }
 
         stage('Deploy Prod with E2E') {
             agent { //reusing the node.js image in docker 
