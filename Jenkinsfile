@@ -60,14 +60,13 @@ pipeline {
                 stage('E2E') {
                     agent { 
                         docker {
-                            image 'mcr.microsoft.com/playwright:v1.45.1-jammy'
+                            image 'my-playwright'
                             reuseNode true
                         }
                     }
                     steps {
                         sh '''
                             echo "E2E stage"
-                            npm install serve
                             node_modules/.bin/serve -s build &
                             # "&" allows server to run in the background and not prevent the rest of the run
                             #relative path of e2e/node_modules/bin/serve
