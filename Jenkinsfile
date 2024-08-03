@@ -90,7 +90,7 @@ pipeline {
         stage('Deploy Staging with E2E') {
             agent { //reusing the node.js image in docker 
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.45.1-jammy'
+                    image 'my-playwright'
                     reuseNode true
                 }
             }
@@ -101,11 +101,11 @@ pipeline {
 
             steps {
                 sh '''
-                    npm install netlify-cli node-jq
+                    #npm install netlify-cli node-jq //not ndeeded with custom docker image
                     node_modules/.bin/netlify --version
                     echo "Deploying to staging. SiteId: $NETFLIFY_SITE_ID"
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
+                    netlify status
+                    netlify deploy --dir=build --json > deploy-output.json
                     CI_ENVIRONMENT_URL=$(node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json)
                     #npm install serve - netlify does this for us
                     npx playwright test --reporter=html
@@ -131,7 +131,7 @@ pipeline {
         stage('Deploy Prod with E2E') {
             agent { //reusing the node.js image in docker 
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.45.1-jammy'
+                    image 'my-playwright'
                     reuseNode true
                 }
             }
@@ -144,10 +144,10 @@ pipeline {
                 sh '''
                     node --version
                     npm install netlify-cli
-                    node_modules/.bin/netlify --version
+                    netlify --version
                     echo "Deploying to production. Site Id: $NETFLIFY_SITE_ID"
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --prod
+                    netlify status
+                    netlify deploy --dir=build --prod
                     #npm install serve - netlify does this for us
                     npx playwright test --reporter=html
                 '''
