@@ -67,7 +67,7 @@ pipeline {
                     steps {
                         sh '''
                             echo "E2E stage"
-                            node_modules/.bin/serve -s build &
+                            serve -s build &
                             # "&" allows server to run in the background and not prevent the rest of the run
                             #relative path of e2e/node_modules/bin/serve
                             #SERVER_PID=$!
