@@ -101,12 +101,12 @@ pipeline {
 
             steps {
                 sh '''
-                    #npm install netlify-cli node-jq //not ndeeded with custom docker image
+                    #npm install netlify-cli node-jq //not needed with custom docker image
                     netlify --version
                     echo "Deploying to staging. SiteId: $NETFLIFY_SITE_ID"
                     netlify status
                     netlify deploy --dir=build --json > deploy-output.json
-                    CI_ENVIRONMENT_URL=$(node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json)
+                    CI_ENVIRONMENT_URL=$(node-jq -r '.deploy_url' deploy-output.json)
                     #npm install serve - netlify does this for us
                     npx playwright test --reporter=html
                 '''
