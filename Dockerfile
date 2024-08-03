@@ -1,3 +1,2 @@
 FROM mcr.microsoft.com/playwright:v1.45.1-jammy
-RUN npm install -g netlify-cli node-jq
-RUN npm install -g serve
+RUN npm install -g netlify-cli node-jq serve
