@@ -102,7 +102,7 @@ pipeline {
             steps {
                 sh '''
                     #npm install netlify-cli node-jq //not ndeeded with custom docker image
-                    node_modules/.bin/netlify --version
+                    netlify --version
                     echo "Deploying to staging. SiteId: $NETFLIFY_SITE_ID"
                     netlify status
                     netlify deploy --dir=build --json > deploy-output.json
