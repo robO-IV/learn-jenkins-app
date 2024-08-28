@@ -28,7 +28,8 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                     sh '''
                         aws --version
-                        aws ecs register-task-definition --cli-input-json file://aws/task-definition-prod.json 
+                        aws ecs register-task-definition --cli-input-json file://aws/task-definition-prod.json
+                        aws ecs update-service --cluster LearnJenkins-Cluster-Prod --service LearnJenkins-Service-Prod --task-definition LearnJenkins-TaskDefinition-Prod:2
                         #aws s3 sync build s3://$AWS_S3_BUCKET original deployment but closed out for ecs section 6
                     ''' 
                 }
