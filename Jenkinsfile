@@ -19,9 +19,9 @@ pipeline {
                     args "--entrypoint=''"
                 }
             }
-            environment {
-                //AWS_S3_BUCKET = 'learn-jenkins-20240806' removed in section 6
-            }
+            // environment {
+            //     //AWS_S3_BUCKET = 'learn-jenkins-20240806' removed in section 6
+            // }
 
             steps {
                 withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
