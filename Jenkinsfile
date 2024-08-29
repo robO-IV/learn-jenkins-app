@@ -32,6 +32,7 @@ pipeline {
                         LATEST_TD_REVISION=$(aws ecs register-task-definition --cli-input-json file://aws/task-definition-prod.json | jq '.taskDefinition.revision')
                         echo $LATEST_TD_REVISION
                         aws ecs update-service --cluster LearnJenkins-Cluster-Prod --service LearnJenkins-Service-Prod --task-definition LearnJenkins-TaskDefinition-Prod:$LATEST_TD_REVISION
+                        aws ecs wait services-stable --cluster LearnJenkins-Cluster-Prod --services LearnJenkins-Service-Prod
                         #aws s3 sync build s3://$AWS_S3_BUCKET original deployment but closed out for ecs section 6
                     ''' 
                 }
