@@ -9,6 +9,7 @@ pipeline {
         REACT_APP_VERSION = "1.0.$BUILD_ID" //refer to expectedAppVersion in app.spec.js and app.js
         APP_NAME = 'myjenkinsapp'
         AWS_DEFAULT_REGION = 'us-east-1'
+        AWS_DOCKER_REGISTRY = '025066241473.dkr.ecr.us-east-1.amazonaws.com/myjenkinsapp'
         AWS_ECS_CLUSTER = 'LearnJenkins-Cluster-Prod'
         AWS_ECS_SERVICE = 'LearnJenkins-Service-Prod'
         AWS_ECS_TD = 'LearnJenkins-TaskDefinition-Prod'
@@ -45,11 +46,17 @@ pipeline {
                 }
             }
             steps {
-                sh '''
-                    #build docker image
-                    docker build -t $APP_NAME:$REACT_APP_VERSION .
-                    #"." in linux for "this directory"
-                '''
+                withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                    sh '''
+                        #build docker image
+                        docker build -t $AWS_DOCKER_REGISTRY/$APP_NAME:$REACT_APP_VERSION .
+                        # login to docker registery
+                        aws ecr get-login-password | docker login --username AWS --password-stdin $AWS_DOCKER_REGISTRY
+                        # upload 'push' docker image to registry aws ecr
+                        docker push $AWS_DOCKER_REGISTRY/$APP_NAME:$REACT_APP_VERSION
+                        #"." in linux for "this directory"
+                    '''
+                }
             }
         }
 
