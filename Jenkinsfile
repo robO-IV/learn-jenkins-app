@@ -2,20 +2,20 @@
 pipeline {
     agent any
 
-    environment {
-        // Section 6: removing netlify deployment and testing stages
-        // NETLIFY_SITE_ID = '34e53681-2d1a-4822-b3d7-ce96b95baec1'
-        // NETLIFY_AUTH_TOKEN = credentials('netlify-token')
-        REACT_APP_VERSION = "1.0.$BUILD_ID" //refer to expectedAppVersion in app.spec.js and app.js
-        APP_NAME = 'myjenkinsapp'
-        AWS_DEFAULT_REGION = 'us-east-1'
-        AWS_DOCKER_REGISTRY = '025066241473.dkr.ecr.us-east-1.amazonaws.com'
-        AWS_ECS_CLUSTER = 'LearnJenkins-Cluster-Prod'
-        AWS_ECS_SERVICE = 'LearnJenkins-Service-Prod'
-        AWS_ECS_TD = 'LearnJenkins-TaskDefinition-Prod'
-    }
+    // environment {
+    //     // Section 6: removing netlify deployment and testing stages
+    //     // NETLIFY_SITE_ID = '34e53681-2d1a-4822-b3d7-ce96b95baec1'
+    //     // NETLIFY_AUTH_TOKEN = credentials('netlify-token')
+    //     REACT_APP_VERSION = "1.0.$BUILD_ID" //refer to expectedAppVersion in app.spec.js and app.js
+    //     APP_NAME = 'myjenkinsapp'
+    //     AWS_DEFAULT_REGION = 'us-east-1'
+    //     AWS_DOCKER_REGISTRY = '025066241473.dkr.ecr.us-east-1.amazonaws.com'
+    //     AWS_ECS_CLUSTER = 'LearnJenkins-Cluster-Prod'
+    //     AWS_ECS_SERVICE = 'LearnJenkins-Service-Prod'
+    //     AWS_ECS_TD = 'LearnJenkins-TaskDefinition-Prod'
+    // }
 
-    stages {
+    stages {//
 
         stage('Build') {
             agent {
@@ -26,65 +26,64 @@ pipeline {
             }
             steps {
                 sh '''
-                    #ls -la
+                    ls -la
                     node --version
                     npm --version
                     npm ci
                     npm run build
-                    ls -la
                 '''
             }
         }
 
-        stage('Build Docker Image') {
-            agent {
-                docker {
-                    image 'my-aws-cli'
-                    reuseNode true
-                    // add docker.sock to go with installing and building docker image for aws
-                    args "-u root -v /var/run/docker.sock:/var/run/docker.sock --entrypoint=''" // Section 6 added '-u root' to manage `yum install jq -y`
-                }
-            }
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
-                    sh '''
-                        #build docker image
-                        docker build -t $AWS_DOCKER_REGISTRY/$APP_NAME:$REACT_APP_VERSION .
-                        # login to docker registery
-                        aws ecr get-login-password | docker login --username AWS --password-stdin $AWS_DOCKER_REGISTRY
-                        # upload 'push' docker image to registry aws ecr
-                        docker push $AWS_DOCKER_REGISTRY/$APP_NAME:$REACT_APP_VERSION
-                        #"." in linux for "this directory"
-                    '''
-                }
-            }
-        }
+        // stage('Build Docker Image') {
+        //     agent {
+        //         docker {
+        //             image 'my-aws-cli'
+        //             reuseNode true
+        //             // add docker.sock to go with installing and building docker image for aws
+        //             args "-u root -v /var/run/docker.sock:/var/run/docker.sock --entrypoint=''" // Section 6 added '-u root' to manage `yum install jq -y`
+        //         }
+        //     }
+        //     steps {
+        //         withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+        //             sh '''
+        //                 #build docker image
+        //                 docker build -t $AWS_DOCKER_REGISTRY/$APP_NAME:$REACT_APP_VERSION .
+        //                 # login to docker registery
+        //                 aws ecr get-login-password | docker login --username AWS --password-stdin $AWS_DOCKER_REGISTRY
+        //                 # upload 'push' docker image to registry aws ecr
+        //                 docker push $AWS_DOCKER_REGISTRY/$APP_NAME:$REACT_APP_VERSION
+        //                 #"." in linux for "this directory"
+        //             '''
+        //         }
+        //     }
+        // }
 
-        stage('Deploy to AWS') { //temp placement, section 6 moves this before Build
-            agent {
-                docker {
-                    image 'my-aws-cli'
-                    reuseNode true
-                    args "--entrypoint=''" // Section 6 added '-u root' to manage `yum install jq -y`
-                } //dropping -u root from args
-            }
-            // environment {
-            //     //AWS_S3_BUCKET = 'learn-jenkins-20240806' removed in section 6
-            // }
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
-                    sh '''
-                        aws --version
-                        sed -i "s/#APP_VERSION#/$REACT_APP_VERSION/g" aws/task-definition-prod.json
-                        LATEST_TD_REVISION=$(aws ecs register-task-definition --cli-input-json file://aws/task-definition-prod.json | jq '.taskDefinition.revision')
-                        echo $LATEST_TD_REVISION
-                        aws ecs update-service --cluster $AWS_ECS_CLUSTER --service $AWS_ECS_SERVICE --task-definition $AWS_ECS_TD:$LATEST_TD_REVISION
-                        aws ecs wait services-stable --cluster $AWS_ECS_CLUSTER --services $AWS_ECS_SERVICE
-                        #aws s3 sync build s3://$AWS_S3_BUCKET original deployment but closed out for ecs section 6
-                    ''' 
-                }
-            }
-        }
+        // stage('Deploy to AWS') { //temp placement, section 6 moves this before Build
+        //     agent {
+        //         docker {
+        //             image 'my-aws-cli'
+        //             reuseNode true
+        //             args "--entrypoint=''" // Section 6 added '-u root' to manage `yum install jq -y`
+        //         } //dropping -u root from args
+        //     }
+        //     // environment {
+        //     //     //AWS_S3_BUCKET = 'learn-jenkins-20240806' removed in section 6
+        //     // }
+        //     steps {
+        //         withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+        //             sh '''
+        //                 aws --version
+        //                 sed -i "s/#APP_VERSION#/$REACT_APP_VERSION/g" aws/task-definition-prod.json
+        //                 LATEST_TD_REVISION=$(aws ecs register-task-definition --cli-input-json file://aws/task-definition-prod.json | jq '.taskDefinition.revision')
+        //                 echo $LATEST_TD_REVISION
+        //                 aws ecs update-service --cluster $AWS_ECS_CLUSTER --service $AWS_ECS_SERVICE --task-definition $AWS_ECS_TD:$LATEST_TD_REVISION
+        //                 aws ecs wait services-stable --cluster $AWS_ECS_CLUSTER --services $AWS_ECS_SERVICE
+        //                 #aws s3 sync build s3://$AWS_S3_BUCKET original deployment but closed out for ecs section 6
+        //             ''' 
+        //         }
+        //     }
+        // }
         // Section 6: removing netlify deployment and testing stages
         // stage('Tests') {
         //     parallel {
