@@ -1,6 +1,12 @@
 // plugin reminder: Blue Ocean
 pipeline {
-    agent any
+   // agent any
+    agent {
+        docker {
+            image 'node:18-alpine'
+            reuseNode true
+        }
+    }
 
     // environment {
     //     // Section 6: removing netlify deployment and testing stages
@@ -15,15 +21,15 @@ pipeline {
     //     AWS_ECS_TD = 'LearnJenkins-TaskDefinition-Prod'
     // }
 
-    stages {//
+    stages {
 
         stage('Build') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
+            // agent {
+            //     docker {
+            //         image 'node:18-alpine'
+            //         reuseNode true
+            //     }
+            // }
             steps {
                 sh '''
                     ls -la
